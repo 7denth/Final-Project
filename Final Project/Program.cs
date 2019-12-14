@@ -14,79 +14,42 @@ namespace Final_Project
         {
             string path = @"F:\\test\Final Project\Furniture.txt";
             List<IFurniture> furniture = new List<IFurniture>();
-            ReadFileIntoList(path, furniture);
-            foreach (IFurniture x in furniture )
+            int counter = 0;
+            float distributionForBigTables;
+            float distributionForMiddleTables;
+            float distributionForSmallTables;
+            Console.WriteLine("What is an expected distribution of sets of different sizes?\n" +
+                "In other words, how many times family, middle, and small size sets are bought per hundred sold sets?\n");
+            while (counter == 0)
+            {
+                try
+                {
+                    counter++;
+                    Console.WriteLine("Please enter the expected value for family size sets?");
+                    distributionForBigTables = Helpers.Helpers.GetDistribution();
+                    Console.WriteLine("What is the expected value for middle size sets?");
+                    distributionForMiddleTables = Helpers.Helpers.GetDistribution();
+                    if (distributionForBigTables + distributionForMiddleTables > 100)
+                    {
+                        throw new IndexOutOfRangeException("The sum of destributions can not be greater then 100.");
+                    }
+                    distributionForSmallTables = 100 - distributionForBigTables - distributionForMiddleTables;
+                }
+                catch (IndexOutOfRangeException ex)
+                {
+                    counter--;
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            Helpers.Helpers.ReadFurnitureFromFileIntoList(path, furniture);
+            foreach (IFurniture x in furniture)
             {
                 Console.WriteLine($"{x.Material} costs {x.Price}");
             }
 
-
-
-
             Console.ReadKey();
         }
-
-        static void ReadFileIntoList(string path, List<IFurniture> list)
-        {
-            if (File.Exists(path))
-            {
-                using (StreamReader reader = new StreamReader(path))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        string material = "";
-                        string size = "";
-                        double price = 0;
-                        string[] materialTypes = { "wood", "plastic", "glass" };
-                        string[] sizeVerieties = { "big", "medium", "small" };
-                        string pattern = @"[0-9]+,[0-9]{2}";
-                        foreach (Match same in Regex.Matches(line, @"table", RegexOptions.IgnoreCase))
-                        {
-                            for (int i = 0; i < materialTypes.Length; i++)
-                            {
-                                foreach (Match match in Regex.Matches(line, materialTypes[i], RegexOptions.IgnoreCase))
-                                {
-                                    material = match.Value;
-                                }
-                            }
-                            for (int i = 0; i < sizeVerieties.Length; i++)
-                            {
-                                foreach (Match match in Regex.Matches(line, sizeVerieties[i], RegexOptions.IgnoreCase))
-                                {
-                                    size = match.Value;
-                                }
-                            }
-                            foreach (Match match in Regex.Matches(line, pattern))
-                            {
-                                price = Convert.ToDouble(match.Value);
-                            }
-                            list.Add(new Table(material, size, price));
-                        }
-                        foreach (Match same in Regex.Matches(line, @"chair", RegexOptions.IgnoreCase))
-                        {
-                            for (int i = 0; i < materialTypes.Length; i++)
-                            {
-                                foreach (Match match in Regex.Matches(line, materialTypes[i], RegexOptions.IgnoreCase))
-                                {
-                                    material = match.Value;
-                                }
-                            }
-                            foreach (Match match in Regex.Matches(line, pattern))
-                            {
-                                price = Convert.ToDouble(match.Value);
-                            }
-                            list.Add(new Chair(material, price));
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("The file with new supplies is not found.");
-            }
-        }
-
 
 
     }

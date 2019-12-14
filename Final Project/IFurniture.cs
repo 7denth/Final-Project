@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    internal interface IFurniture
+    public interface IFurniture
     {
         string Material { get; }
         double Price { get; }

@@ -6,23 +6,22 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    class Table : IFurniture
+    class Chair : IFurniture
     {
         string material;
-        string size;
         double price;
+
+        public Chair(string material, double price)
+        {
+            this.material = material;
+            this.price = price;
+        }
+
         public string Material 
-        { 
+        {
             get
             {
                 return material;
-            } 
-        }
-        public string Size 
-        {
-            get 
-            {
-                return size;
             }
         }
         public double Price 
@@ -31,12 +30,6 @@ namespace Final_Project
             {
                 return price;
             }
-        }
-        public Table(string material, string size, double price)
-        {
-            this.material = material;
-            this.size = size;
-            this.price = price;
         }
     }
 }

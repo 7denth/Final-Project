@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    class Set
+    class Kit
     {
-        string name;
-        Table itemT;
-        Chair itemC;
         public string Name { get; set; }
-        public Table ItemT { get; set; }
-        public Chair ItemC { get; set; }
+        public Table Table { get; set; }
+        public Chair Chair { get; set; }
     }
 }
