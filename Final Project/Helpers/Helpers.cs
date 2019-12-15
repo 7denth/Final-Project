@@ -15,8 +15,9 @@ namespace Final_Project.Helpers
         static public string[] materialTypes = { "wood", "plastic", "glass" };
         static public string[] sizeVerieties = { "big", "medium", "small" };
 
-        public static void ReadFurnitureFromFileIntoList(string path, List<IFurniture> list)
+        public static List<IFurniture> ReadFurnitureFromFileIntoList(string path)
         {
+            List<IFurniture> list = new List<IFurniture>();
             if (File.Exists(path))
             {
                 using (StreamReader reader = new StreamReader(path))
@@ -62,11 +63,72 @@ namespace Final_Project.Helpers
                         }
                     }
                 }
+                return list;
             }
             else
             {
                 Console.WriteLine("The file with new supplies is not found.");
+                return list;
             }
+        }
+
+        public static string GetNameOfSet()
+        {
+            int counter = 0;
+            Console.WriteLine("Please enter a name for futere set.");
+            string nameOfSet = "";
+            while (counter == 0)
+            {
+                try
+                {
+                    string temp = Console.ReadLine();
+                    Regex pattern = new Regex(@"[a-zA-Z]");
+                    if (pattern.IsMatch(temp))
+                    {
+                        counter++;
+                        nameOfSet = temp.First().ToString().ToUpper() + temp.Substring(1).ToLower();
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Please enter better name.");
+                    }
+                }
+                catch (ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            return nameOfSet;
+        }
+
+        public static string GetSizeOrMaterial(string[] arrayOfSizeOrMaterial)
+        {
+            int getCounter = 0;
+            string sizeOrMaterial = "";
+            while (getCounter == 0)
+            {
+                string sizeMat = Console.ReadLine();
+                foreach (string s in arrayOfSizeOrMaterial)
+                {
+                    if (sizeMat.ToLower().Equals(s))
+                    {
+                        getCounter++;
+                        sizeOrMaterial = sizeMat.First().ToString().ToUpper() + sizeMat.Substring(1).ToLower();
+                    }
+                }
+                if (sizeOrMaterial.Equals(""))
+                {
+                    if (arrayOfSizeOrMaterial[0].Equals("big"))
+                    {
+                        Console.WriteLine("Wrong size. Possible sizes: big, medium, or small.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong material. Possible materials: wood, plastic, or glass.");
+                    }
+                }
+            }
+            return sizeOrMaterial;
         }
 
         public static float GetDistribution()
