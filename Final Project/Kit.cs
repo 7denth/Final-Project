@@ -8,8 +8,20 @@ namespace Final_Project
 {
     class Kit
     {
-        public string Name { get; set; }
+        string name;
+        public string Name { get { return name; } }
+
+        public Kit(string name)
+        {
+            this.name = name;
+        }
+
         public Table Table { get; set; }
-        public Chair Chair { get; set; }
+
+        List<Chair> chairsInTheKit = new List<Chair>();
+        public List<Chair> GetList()
+        {
+            return chairsInTheKit;
+        }
     }
 }
