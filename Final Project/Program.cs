@@ -13,7 +13,6 @@ namespace Final_Project
         static void Main(string[] args)
         {
             string path = @"F:\\test\Final Project\Furniture.txt";
-            int generalCounter = 0;
             List<IFurniture> furniture = Helpers.Helpers.ReadFurnitureFromFileIntoList(path);
             //List<Kit> setsOfFurniture = new List<Kit>();
             var tables = furniture.Where(item => item is Table)
@@ -25,151 +24,81 @@ namespace Final_Project
 
             int setOfChairs = 0;
             string chairMaterial = "";
-            int smallWoodTable = CountTablesOfEachType("wood", "small");
-            int smallPlasticTable = CountTablesOfEachType("plastic", "small");
-            int smallGlassTable = CountTablesOfEachType("glass", "small");
-            int woodPricedChair = GetChairsOfOneTypeAtOnePrice("wood").Count();
-            int plasticPricedChair = GetChairsOfOneTypeAtOnePrice("plastic").Count();
 
-            Console.WriteLine("Lets build a set of furniture from what we have in stock.");
-            Kit setOfFurniture = new Kit(Helpers.Helpers.GetNameOfSet());
+            Kit firstSetOfFurniture = new Kit();
+            Kit secondSetOfFurniture2 = new Kit();
+            newKit(firstSetOfFurniture);
+            newKit(secondSetOfFurniture2);
 
-            if (HowManyTables() == 0)
+
+
+
+
+            void newKit(Kit setOfFurniture)
             {
-                Console.WriteLine("There is no tables in stock. Unfortunatelly we can not produce any set of furniture.");
-            }
-            else
-            {
-                while (generalCounter == 0)
+                int generalCounter = 0;
+                int smallWoodTable = CountTablesOfEachType("wood", "small");
+                int smallPlasticTable = CountTablesOfEachType("plastic", "small");
+                int smallGlassTable = CountTablesOfEachType("glass", "small");
+                int woodPricedChair = GetChairsOfOneTypeAtOnePrice("wood").Count();
+                int plasticPricedChair = GetChairsOfOneTypeAtOnePrice("plastic").Count();
+                Console.WriteLine("Lets build a set of furniture from what we have in stock.");
+                setOfFurniture.Name = Helpers.Helpers.GetNameOfSet();
+
+                if (HowManyTables() == 0)
                 {
-                    FindTable();
-                    setOfChairs = GetNumberOfChairs();
-                    chairMaterial = GetChairMaterialType();
-                    IEnumerable<Chair> chairsOfOneTypeAtOnePrice = GetChairsOfOneTypeAtOnePrice(chairMaterial);
-
-                    if (chairsOfOneTypeAtOnePrice.Count() >= setOfChairs)
+                    Console.WriteLine("There is no tables in stock. Unfortunatelly we can not produce any set of furniture.");
+                }
+                else
+                {
+                    while (generalCounter == 0)
                     {
-                        foreach (Chair y in chairsOfOneTypeAtOnePrice)
+                        FindTable(setOfFurniture);
+                        setOfChairs = GetNumberOfChairs(setOfFurniture);
+                        chairMaterial = GetChairMaterialType(setOfFurniture);
+                        IEnumerable<Chair> chairsOfOneTypeAtOnePrice = GetChairsOfOneTypeAtOnePrice(chairMaterial);
+
+                        if (chairsOfOneTypeAtOnePrice.Count() >= setOfChairs)
                         {
-                            generalCounter++;
-                            setOfFurniture.GetList().Add(y);
-                            if (setOfFurniture.GetList().Count == setOfChairs)
+                            foreach (Chair y in chairsOfOneTypeAtOnePrice)
                             {
-                                break;
+                                generalCounter++;
+                                setOfFurniture.GetList().Add(y);
+                                if (setOfFurniture.GetList().Count == setOfChairs)
+                                {
+                                    int newCounter = 0;
+                                    foreach (var c in setOfFurniture.GetList())
+                                    {
+                                        chairs.Remove(c);
+                                    }
+                                    foreach (Chair x in chairs)
+                                    {
+                                        newCounter++;
+                                    }
+                                    break;
+                                }
                             }
+                            Console.WriteLine($"\n{ShowResult(setOfFurniture)}");
                         }
-                        Console.WriteLine($"\n{ShowResult()}");
-                    }
-                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
-                        (GetChairsOfOneTypeAtOnePrice("wood").Count() >= 2)) && (smallWoodTable > 0 || smallGlassTable > 0))
-                    {
-                        Console.WriteLine("Try other combinations.");
-                    }
-                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
-                        (GetChairsOfOneTypeAtOnePrice("plastic").Count() >= 2)) && (smallPlasticTable > 0 || smallGlassTable > 0))
-                    {
-                        Console.WriteLine("Try other combinations.");
-                    }
-                    else if (woodPricedChair < 2 || (woodPricedChair < 2 && (smallWoodTable < 1 || smallGlassTable < 1)) ||
-                        plasticPricedChair < 2 || (plasticPricedChair < 2 && (smallPlasticTable < 1 || smallGlassTable < 1)))
-                    {
-                        generalCounter--;
-                        Console.WriteLine("There is not enough chairs to make any set.");
-                    }
-                }
-            }
-
-
-            IEnumerable<Chair> GetChairsOfDiffPrices(string material)
-            {
-                var chairsOfEachSeperatePrice = ChairFilterBy(material)
-                                                  .GroupBy(m => m.Price)
-                                                  .Select(g => g.First())
-                                                  .ToList();
-                return chairsOfEachSeperatePrice;
-            }
-
-            IEnumerable<Chair> GetChairsOfOneTypeAtOnePrice(string material)
-            {
-                IEnumerable<Chair> chairOfOneTypeAndOnePrice = CountChairsOfOneTypeMaxPrice(chairMaterial);
-                foreach (Chair x in GetChairsOfDiffPrices(material))
-                {
-                    chairOfOneTypeAndOnePrice = from prc in ChairFilterBy(material)
-                                       where prc.Price == x.Price
-                                       select prc;
-                    if (chairOfOneTypeAndOnePrice.Count() >= setOfChairs)
-                    {
-                        return chairOfOneTypeAndOnePrice;
+                        else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                            (GetChairsOfOneTypeAtOnePrice("wood").Count() >= 2)) && (smallWoodTable > 0 || smallGlassTable > 0))
+                        {
+                            Console.WriteLine("Try other combinations.");
+                        }
+                        else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                            (GetChairsOfOneTypeAtOnePrice("plastic").Count() >= 2)) && (smallPlasticTable > 0 || smallGlassTable > 0))
+                        {
+                            Console.WriteLine("Try other combinations.");
+                        }
+                        else if (woodPricedChair < 2 || (woodPricedChair < 2 && (smallWoodTable < 1 || smallGlassTable < 1)) ||
+                            plasticPricedChair < 2 || (plasticPricedChair < 2 && (smallPlasticTable < 1 || smallGlassTable < 1)))
+                        {
+                            generalCounter--;
+                            Console.WriteLine("There is not enough chairs to make any set.");
+                        }
                     }
                 }
-                return chairOfOneTypeAndOnePrice;
             }
-
-            IEnumerable<Chair> CountChairsOfOneTypeMaxPrice(string material)
-            {
-                var chairsPricedList = from prc in ChairFilterBy(material)
-                                       where prc.Price == ChairFilterBy(material).Max(x => x.Price)
-                                       select prc;
-                return chairsPricedList;
-            }
-
-
-
-
-
-
-            IEnumerable<Table> TableFilterBy(string material, string size)
-            {
-                var intermediateFilteredList = from chr in tables
-                                               where chr.Material.ToLower().Equals(material.ToLower())
-                                               select chr;
-                var filteredList = from chr in intermediateFilteredList
-                                   where chr.Size.ToLower().Equals(size.ToLower())
-                                   select chr;
-                return filteredList;
-            }
-
-            int CountTablesOfEachType(string whichFilter, string whichType)
-            {
-                int counterForTables = 0;
-                foreach (Table z in TableFilterBy(whichFilter, whichType))
-                {
-                    counterForTables++;
-                }
-                return counterForTables;
-            }
-
-            IEnumerable<Chair> ChairFilterBy(string whichType)
-            {
-                    var FilteredList = from chr in chairs
-                                   where chr.Material.ToLower().Equals(whichType.ToLower())
-                                   select chr;
-                    return FilteredList;
-            }
-
-            int newCounter = 0;
-            foreach (var c in setOfFurniture.GetList())
-            {
-                chairs.Remove(c);
-            }
-            foreach (Chair x in chairs)
-            {
-                newCounter++;
-            }
-
-            double GetPriceOfChairsInSet()
-            {
-                double cost = 0;
-                foreach (Chair x in setOfFurniture.GetList())
-                {
-                    cost += x.Price;
-                }
-                return cost;
-            }
-
-
-
-
 
             int HowManyTables()
             {
@@ -181,7 +110,7 @@ namespace Final_Project
                 return result;
             }
 
-            void FindTable()
+            void FindTable(Kit setOfFurniture)
             {
                 int tableCounter = 0;
                 while (tableCounter == 0)
@@ -210,7 +139,7 @@ namespace Final_Project
                 }
             }
 
-            string GetChairMaterialType()
+            string GetChairMaterialType(Kit setOfFurniture)
             {
                 if (setOfFurniture.Table.Material.ToLower().Equals("wood"))
                 {
@@ -227,7 +156,7 @@ namespace Final_Project
                 }
             }
 
-            int GetNumberOfChairs()
+            int GetNumberOfChairs(Kit setOfFurniture)
             {
                 if (setOfFurniture.Table.Size.ToLower().Equals("big"))
                 {
@@ -243,21 +172,85 @@ namespace Final_Project
                 }
             }
 
-            string ShowResult()
+            IEnumerable<Chair> GetChairsOfDiffPrices(string material)
+            {
+                var chairsOfEachSeperatePrice = ChairFilterBy(material)
+                                                  .GroupBy(m => m.Price)
+                                                  .Select(g => g.First())
+                                                  .ToList();
+                return chairsOfEachSeperatePrice;
+            }
+
+            IEnumerable<Chair> GetChairsOfOneTypeAtOnePrice(string material)
+            {
+                IEnumerable<Chair> chairOfOneTypeAndOnePrice = CountChairsOfOneTypeMaxPrice(chairMaterial);
+                foreach (Chair x in GetChairsOfDiffPrices(material))
+                {
+                    chairOfOneTypeAndOnePrice = from prc in ChairFilterBy(material)
+                                                where prc.Price == x.Price
+                                                select prc;
+                    if (chairOfOneTypeAndOnePrice.Count() >= setOfChairs)
+                    {
+                        return chairOfOneTypeAndOnePrice;
+                    }
+                }
+                return chairOfOneTypeAndOnePrice;
+            }
+
+            IEnumerable<Chair> CountChairsOfOneTypeMaxPrice(string material)
+            {
+                var chairsPricedList = from prc in ChairFilterBy(material)
+                                       where prc.Price == ChairFilterBy(material).Max(x => x.Price)
+                                       select prc;
+                return chairsPricedList;
+            }
+
+            IEnumerable<Table> TableFilterBy(string material, string size)
+            {
+                var intermediateFilteredList = from chr in tables
+                                               where chr.Material.ToLower().Equals(material.ToLower())
+                                               select chr;
+                var filteredList = from chr in intermediateFilteredList
+                                   where chr.Size.ToLower().Equals(size.ToLower())
+                                   select chr;
+                return filteredList;
+            }
+
+            int CountTablesOfEachType(string whichFilter, string whichType)
+            {
+                int counterForTables = 0;
+                foreach (Table z in TableFilterBy(whichFilter, whichType))
+                {
+                    counterForTables++;
+                }
+                return counterForTables;
+            }
+
+            IEnumerable<Chair> ChairFilterBy(string whichType)
+            {
+                var FilteredList = from chr in chairs
+                                   where chr.Material.ToLower().Equals(whichType.ToLower())
+                                   select chr;
+                return FilteredList;
+            }
+
+            double GetPriceOfChairsInSet(Kit setOfFurniture)
+            {
+                double cost = 0;
+                foreach (Chair x in setOfFurniture.GetList())
+                {
+                    cost += x.Price;
+                }
+                return cost;
+            }
+
+            string ShowResult(Kit setOfFurniture)
             {
                 return $"{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
                     $"{setOfFurniture.Table.GetType().Name.ToString()} at price of USD {setOfFurniture.Table.Price}\n" +
-                    $"and {setOfChairs} chairs at USD {GetPriceOfChairsInSet() / setOfChairs} each.\n" +
-                    $"Total price for {setOfFurniture.Name} Kit is USD {setOfFurniture.Table.Price + GetPriceOfChairsInSet()}.";
-            }
-
-            ShowChairs();
-            void ShowChairs()
-            {
-                foreach (Chair x in setOfFurniture.GetList())
-                {
-                    Console.Write($"{x.Material} at {x.Price}\n");
-                }
+                    $"and {setOfChairs} chairs at USD {GetPriceOfChairsInSet(setOfFurniture) / setOfChairs} each.\n" +
+                    $"Total price for {setOfFurniture.Name} Kit is USD " +
+                    $"{setOfFurniture.Table.Price + GetPriceOfChairsInSet(setOfFurniture)}.\n";
             }
 
             Console.ReadKey();

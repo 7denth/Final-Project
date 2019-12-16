@@ -9,8 +9,19 @@ namespace Final_Project
     class Kit
     {
         string name;
-        public string Name { get { return name; } }
+        public string Name 
+        { 
+            get 
+            { 
+                return name; 
+            } 
+            set
+            {
+                name = value;
+            }
+        }
 
+        public Kit() { }
         public Kit(string name)
         {
             this.name = name;
