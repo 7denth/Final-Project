@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    class Table : IFurniture
+    public class Table : IFurniture
     {
         string material;
         string size;

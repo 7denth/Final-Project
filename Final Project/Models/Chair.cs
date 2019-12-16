@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    class Chair : IFurniture
+    public class Chair : IFurniture
     {
         string material;
         double price;

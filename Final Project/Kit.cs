@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Final_Project
 {
-    class Kit
+    public class Kit
     {
         string name;
         public string Name 

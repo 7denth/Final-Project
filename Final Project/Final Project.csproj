@@ -44,12 +44,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Chair.cs" />
-    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="Services\ChairServices.cs" />
+    <Compile Include="Services\FurnitureServices.cs" />
     <Compile Include="IFurniture.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Kit.cs" />
     <Compile Include="Models\Table.cs" />
+    <Compile Include="Services\TableServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

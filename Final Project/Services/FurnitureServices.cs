@@ -7,10 +7,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 
-namespace Final_Project.Helpers
+namespace Final_Project
 {
-    public class Helpers
+    public class FurnitureServices
     {
+        int setOfChairs = 0;
+        string chairMaterial = "";
         static public string[] furnitureTypes = { "Table", "Chair" };
         static public string[] materialTypes = { "wood", "plastic", "glass" };
         static public string[] sizeVerieties = { "big", "medium", "small" };
@@ -70,6 +72,74 @@ namespace Final_Project.Helpers
             {
                 Console.WriteLine("The file with new supplies is not found.");
                 return list;
+            }
+        }
+
+        public void CreateNewKit(Kit setOfFurniture, List<Table> tables, List<Chair> chairs)
+        {
+            TableServices tableServices = new TableServices();
+            ChairServices chairServices = new ChairServices();
+            int generalCounter = 0;
+            int smallWoodTable = tableServices.CountTablesOfEachType("wood", "small", tables);
+            int smallPlasticTable = tableServices.CountTablesOfEachType("plastic", "small", tables);
+            int smallGlassTable = tableServices.CountTablesOfEachType("glass", "small", tables);
+            int woodPricedChair = chairServices.GetChairsOfOneTypeAtOnePrice("wood", chairs, setOfChairs).Count();
+            int plasticPricedChair = chairServices.GetChairsOfOneTypeAtOnePrice("plastic", chairs, setOfChairs).Count();
+            Console.WriteLine("Lets build a set of furniture from what we have in stock.");
+            setOfFurniture.Name = FurnitureServices.GetNameOfSet();
+
+            if (tables.Count() == 0)
+            {
+                Console.WriteLine("There is no tables in stock. Unfortunatelly we can not produce any set of furniture.");
+            }
+            else
+            {
+                while (generalCounter == 0)
+                {
+                    tableServices.FindTable(setOfFurniture, tables);
+                    setOfChairs = chairServices.GetNumberOfChairs(setOfFurniture);
+                    chairMaterial = chairServices.GetChairMaterialType(setOfFurniture);
+                    IEnumerable<Chair> chairsOfOneTypeAtOnePrice = chairServices.GetChairsOfOneTypeAtOnePrice(chairMaterial, chairs, setOfChairs);
+
+                    if (chairsOfOneTypeAtOnePrice.Count() >= setOfChairs)
+                    {
+                        foreach (Chair y in chairsOfOneTypeAtOnePrice)
+                        {
+                            generalCounter++;
+                            setOfFurniture.GetList().Add(y);
+                            if (setOfFurniture.GetList().Count == setOfChairs)
+                            {
+                                int newCounter = 0;
+                                foreach (var c in setOfFurniture.GetList())
+                                {
+                                    chairs.Remove(c);
+                                }
+                                foreach (Chair x in chairs)
+                                {
+                                    newCounter++;
+                                }
+                                break;
+                            }
+                        }
+                        Console.WriteLine($"\n{ShowResult(setOfFurniture)}");
+                    }
+                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                        (chairServices.GetChairsOfOneTypeAtOnePrice("wood", chairs, setOfChairs).Count() >= 2)) && (smallWoodTable > 0 || smallGlassTable > 0))
+                    {
+                        Console.WriteLine("Try other combinations.");
+                    }
+                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                        (chairServices.GetChairsOfOneTypeAtOnePrice("plastic", chairs, setOfChairs).Count() >= 2)) && (smallPlasticTable > 0 || smallGlassTable > 0))
+                    {
+                        Console.WriteLine("Try other combinations.");
+                    }
+                    else if (woodPricedChair < 2 || (woodPricedChair < 2 && (smallWoodTable < 1 || smallGlassTable < 1)) ||
+                        plasticPricedChair < 2 || (plasticPricedChair < 2 && (smallPlasticTable < 1 || smallGlassTable < 1)))
+                    {
+                        generalCounter--;
+                        Console.WriteLine("There is not enough chairs to make any set.");
+                    }
+                }
             }
         }
 
@@ -133,7 +203,15 @@ namespace Final_Project.Helpers
             return sizeOrMaterial;
         }
 
-
+        string ShowResult(Kit setOfFurniture)
+        {
+            ChairServices chairServices = new ChairServices();
+            return $"{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
+                $"{setOfFurniture.Table.GetType().Name.ToString()} at price of USD {setOfFurniture.Table.Price}\n" +
+                $"and {setOfChairs} chairs at USD {chairServices.GetPriceOfChairsInSet(setOfFurniture) / setOfChairs} each.\n" +
+                $"Total price for {setOfFurniture.Name} Kit is USD " +
+                $"{setOfFurniture.Table.Price + chairServices.GetPriceOfChairsInSet(setOfFurniture)}.\n";
+        }
 
     }
 }
