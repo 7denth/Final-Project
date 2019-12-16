@@ -13,34 +13,9 @@ namespace Final_Project
         static void Main(string[] args)
         {
             string path = @"F:\\test\Final Project\Furniture.txt";
-            //Console.WriteLine("What is an expected distribution of sets of different sizes?\n" +
-            //    "In other words, how many times family, middle, and small size sets are bought per hundred sold sets?\n");
-            //int counter = 0;
-            //float distributionForBigTables = 0;
-            //float distributionForMiddleTables = 0;
-            //float distributionForSmallTables = 0;
-            //while (counter == 0)
-            //{
-            //    try
-            //    {
-            //        counter++;
-            //        Console.WriteLine("Please enter the expected value for family size sets?");
-            //        distributionForBigTables = Helpers.Helpers.GetDistribution();
-            //        Console.WriteLine("What is the expected value for middle size sets?");
-            //        distributionForMiddleTables = Helpers.Helpers.GetDistribution();
-            //        if (distributionForBigTables + distributionForMiddleTables > 100)
-            //        {
-            //            throw new IndexOutOfRangeException("The sum of destributions can not be greater then 100.");
-            //        }
-            //        distributionForSmallTables = 100 - distributionForBigTables - distributionForMiddleTables;
-            //    }
-            //    catch (IndexOutOfRangeException ex)
-            //    {
-            //        counter--;
-            //        Console.WriteLine(ex.Message);
-            //    }
-            //}
+            int generalCounter = 0;
             List<IFurniture> furniture = Helpers.Helpers.ReadFurnitureFromFileIntoList(path);
+            //List<Kit> setsOfFurniture = new List<Kit>();
             var tables = furniture.Where(item => item is Table)
                 .Select(item => (Table)item)
                 .ToList();
@@ -48,65 +23,100 @@ namespace Final_Project
                 .Select(item => (Chair)item)
                 .ToList();
 
+            int setOfChairs = 0;
+            string chairMaterial = "";
+            int smallWoodTable = CountTablesOfEachType("wood", "small");
+            int smallPlasticTable = CountTablesOfEachType("plastic", "small");
+            int smallGlassTable = CountTablesOfEachType("glass", "small");
+            int woodPricedChair = GetChairsOfOneTypeAtOnePrice("wood").Count();
+            int plasticPricedChair = GetChairsOfOneTypeAtOnePrice("plastic").Count();
+
             Console.WriteLine("Lets build a set of furniture from what we have in stock.");
             Kit setOfFurniture = new Kit(Helpers.Helpers.GetNameOfSet());
 
-            Console.WriteLine("Now please type in a size of table you want to have in your set");
-            string sizeOfTable = Helpers.Helpers.GetSizeOrMaterial(Helpers.Helpers.sizeVerieties);
-
-            Console.WriteLine("And we should define a material from which a table is made.");
-            string materialOfTable = Helpers.Helpers.GetSizeOrMaterial(Helpers.Helpers.materialTypes);
-
-            var expensiveTable = TableFilterBy(materialOfTable, sizeOfTable)
-                .Where(p => p.Price == TableFilterBy(materialOfTable, sizeOfTable).Max(mp => mp.Price))
-                .FirstOrDefault();
-
-            if (expensiveTable != null)
+            if (HowManyTables() == 0)
             {
-                setOfFurniture.Table = expensiveTable;
-                tables.Remove(expensiveTable);
+                Console.WriteLine("There is no tables in stock. Unfortunatelly we can not produce any set of furniture.");
             }
-            else if ()
+            else
             {
+                while (generalCounter == 0)
+                {
+                    FindTable();
+                    setOfChairs = GetNumberOfChairs();
+                    chairMaterial = GetChairMaterialType();
+                    IEnumerable<Chair> chairsOfOneTypeAtOnePrice = GetChairsOfOneTypeAtOnePrice(chairMaterial);
 
+                    if (chairsOfOneTypeAtOnePrice.Count() >= setOfChairs)
+                    {
+                        foreach (Chair y in chairsOfOneTypeAtOnePrice)
+                        {
+                            generalCounter++;
+                            setOfFurniture.GetList().Add(y);
+                            if (setOfFurniture.GetList().Count == setOfChairs)
+                            {
+                                break;
+                            }
+                        }
+                        Console.WriteLine($"\n{ShowResult()}");
+                    }
+                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                        (GetChairsOfOneTypeAtOnePrice("wood").Count() >= 2)) && (smallWoodTable > 0 || smallGlassTable > 0))
+                    {
+                        Console.WriteLine("Try other combinations.");
+                    }
+                    else if ((chairsOfOneTypeAtOnePrice.Count() <= setOfChairs &&
+                        (GetChairsOfOneTypeAtOnePrice("plastic").Count() >= 2)) && (smallPlasticTable > 0 || smallGlassTable > 0))
+                    {
+                        Console.WriteLine("Try other combinations.");
+                    }
+                    else if (woodPricedChair < 2 || (woodPricedChair < 2 && (smallWoodTable < 1 || smallGlassTable < 1)) ||
+                        plasticPricedChair < 2 || (plasticPricedChair < 2 && (smallPlasticTable < 1 || smallGlassTable < 1)))
+                    {
+                        generalCounter--;
+                        Console.WriteLine("There is not enough chairs to make any set.");
+                    }
+                }
+            }
+
+
+            IEnumerable<Chair> GetChairsOfDiffPrices(string material)
+            {
+                var chairsOfEachSeperatePrice = ChairFilterBy(material)
+                                                  .GroupBy(m => m.Price)
+                                                  .Select(g => g.First())
+                                                  .ToList();
+                return chairsOfEachSeperatePrice;
+            }
+
+            IEnumerable<Chair> GetChairsOfOneTypeAtOnePrice(string material)
+            {
+                IEnumerable<Chair> chairOfOneTypeAndOnePrice = CountChairsOfOneTypeMaxPrice(chairMaterial);
+                foreach (Chair x in GetChairsOfDiffPrices(material))
+                {
+                    chairOfOneTypeAndOnePrice = from prc in ChairFilterBy(material)
+                                       where prc.Price == x.Price
+                                       select prc;
+                    if (chairOfOneTypeAndOnePrice.Count() >= setOfChairs)
+                    {
+                        return chairOfOneTypeAndOnePrice;
+                    }
+                }
+                return chairOfOneTypeAndOnePrice;
+            }
+
+            IEnumerable<Chair> CountChairsOfOneTypeMaxPrice(string material)
+            {
+                var chairsPricedList = from prc in ChairFilterBy(material)
+                                       where prc.Price == ChairFilterBy(material).Max(x => x.Price)
+                                       select prc;
+                return chairsPricedList;
             }
 
 
 
 
 
-
-
-
-            int bigTableWood = CountTablesOfEachType("wood", "big");
-            int mediumTableWood = CountTablesOfEachType("wood", "medium");
-            int smallTableWood = CountTablesOfEachType("wood", "small");
-            int bigTablePlastic = CountTablesOfEachType("plastic", "big");
-            int mediumTablePlastic = CountTablesOfEachType("plastic", "medium");
-            int smallTablePlastic = CountTablesOfEachType("plastic", "small");
-            int bigTableGlass = CountTablesOfEachType("glass", "big");
-            int mediumTableGlass = CountTablesOfEachType("glass", "medium");
-            int smallTableGlass = CountTablesOfEachType("glass", "small");
-            int bigTables = bigTableWood + bigTablePlastic + bigTableGlass;
-            int mediumTables = mediumTableWood + mediumTablePlastic + mediumTableGlass;
-            int smallTables = smallTableWood + smallTablePlastic + smallTableGlass;
-            int woodTables = bigTableWood + mediumTableWood + smallTableWood;
-            int plasticTables = bigTablePlastic + mediumTablePlastic + smallTablePlastic;
-            int glassTables = bigTableGlass + mediumTableGlass + smallTableGlass;
-            int woodchair = CountChairsOfEachType("wood");
-            int plasticchair = CountChairsOfEachType("plastic");
-            int vacantSpacesForChairsInSets = bigTables * 6 + mediumTables * 4 + smallTables * 2;
-            int amountOfTables = bigTables + mediumTables + smallTables;
-
-            //int FindAmntOfTablesBasedOnDistributon(int tablesSize, float distribution )
-            //{
-            //    return (int)(tablesSize * (distribution / 100));
-            //}
-
-            //int rqrdBigTables = FindAmntOfTablesBasedOnDistributon(bigTables, distributionForBigTables);
-            //int rqrdMediumTables = FindAmntOfTablesBasedOnDistributon(mediumTables, distributionForMiddleTables);
-            //int rqrdSmallTables = amountOfTables - rqrdBigTables - rqrdMediumTables;
-            //Console.WriteLine($"{rqrdBigTables}, {rqrdMediumTables}, {rqrdSmallTables}: Total: {amountOfTables}");
 
             IEnumerable<Table> TableFilterBy(string material, string size)
             {
@@ -136,33 +146,7 @@ namespace Final_Project
                                    select chr;
                     return FilteredList;
             }
-            int CountChairsOfEachType(string whichType)
-            {
-                int counterForChairs = 0;
-                foreach (Chair z in ChairFilterBy(whichType))
-                {
-                    counterForChairs++;
-                }
-                return counterForChairs;
-            }
 
-
-            var woodChairsPricedList = from prc in ChairFilterBy("wood")
-                                       where prc.Price == ChairFilterBy("wood").Max(x => x.Price)
-                                       select prc;
-
-            int bigSet = 6;
-            if (woodChairsPricedList.Count() >= bigSet)
-            {
-                foreach (Chair y in woodChairsPricedList)
-                {
-                    setOfFurniture.GetList().Add(y);
-                    if (setOfFurniture.GetList().Count == bigSet)
-                    {
-                        break;
-                    }
-                }
-            }
             int newCounter = 0;
             foreach (var c in setOfFurniture.GetList())
             {
@@ -172,9 +156,102 @@ namespace Final_Project
             {
                 newCounter++;
             }
-            Console.WriteLine(woodchair + plasticchair);
-            Console.WriteLine(newCounter);
 
+            double GetPriceOfChairsInSet()
+            {
+                double cost = 0;
+                foreach (Chair x in setOfFurniture.GetList())
+                {
+                    cost += x.Price;
+                }
+                return cost;
+            }
+
+
+
+
+
+            int HowManyTables()
+            {
+                int result = 0;
+                foreach (Table x in tables)
+                {
+                    result++;
+                }
+                return result;
+            }
+
+            void FindTable()
+            {
+                int tableCounter = 0;
+                while (tableCounter == 0)
+                {
+                    Console.WriteLine("Now please type in a size of table you want to have in your set.");
+                    string sizeOfTable = Helpers.Helpers.GetSizeOrMaterial(Helpers.Helpers.sizeVerieties);
+
+                    Console.WriteLine("And we should define a material from which a table is made.");
+                    string materialOfTable = Helpers.Helpers.GetSizeOrMaterial(Helpers.Helpers.materialTypes);
+
+                    var expensiveTable = TableFilterBy(materialOfTable, sizeOfTable)
+                        .Where(p => p.Price == TableFilterBy(materialOfTable, sizeOfTable).Max(mp => mp.Price))
+                        .FirstOrDefault();
+
+                    if (expensiveTable != null)
+                    {
+                        tableCounter++;
+                        setOfFurniture.Table = expensiveTable;
+                        tables.Remove(expensiveTable);
+                    }
+                    else if (expensiveTable == null)
+                    {
+                        Console.WriteLine($"We don't have {sizeOfTable} {materialOfTable} Tables in stock, " +
+                            $"please choose another size and/or material.");
+                    }
+                }
+            }
+
+            string GetChairMaterialType()
+            {
+                if (setOfFurniture.Table.Material.ToLower().Equals("wood"))
+                {
+                    return "wood";
+                }
+                else if (setOfFurniture.Table.Material.ToLower().Equals("plastic"))
+                {
+                    return "plastic";
+                }
+                else
+                {
+                    Console.WriteLine("For glass table please choose either wood or plastic chairs.");
+                    return Helpers.Helpers.GetSizeOrMaterial(Helpers.Helpers.chairMaterialTypes);
+                }
+            }
+
+            int GetNumberOfChairs()
+            {
+                if (setOfFurniture.Table.Size.ToLower().Equals("big"))
+                {
+                    return 6;
+                }
+                else if (setOfFurniture.Table.Size.ToLower().Equals("medium"))
+                {
+                    return 4;
+                }
+                else
+                {
+                    return 2;
+                }
+            }
+
+            string ShowResult()
+            {
+                return $"{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
+                    $"{setOfFurniture.Table.GetType().Name.ToString()} at price of USD {setOfFurniture.Table.Price}\n" +
+                    $"and {setOfChairs} chairs at USD {GetPriceOfChairsInSet() / setOfChairs} each.\n" +
+                    $"Total price for {setOfFurniture.Name} Kit is USD {setOfFurniture.Table.Price + GetPriceOfChairsInSet()}.";
+            }
+
+            ShowChairs();
             void ShowChairs()
             {
                 foreach (Chair x in setOfFurniture.GetList())
@@ -182,11 +259,6 @@ namespace Final_Project
                     Console.Write($"{x.Material} at {x.Price}\n");
                 }
             }
-
-            Console.WriteLine($"{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
-                $"{setOfFurniture.Table.GetType().Name.ToString()} at price of {setOfFurniture.Table.Price}\n" +
-                $"and 6 Chairs:");
-            ShowChairs();
 
             Console.ReadKey();
         }

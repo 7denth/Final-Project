@@ -14,6 +14,7 @@ namespace Final_Project.Helpers
         static public string[] furnitureTypes = { "Table", "Chair" };
         static public string[] materialTypes = { "wood", "plastic", "glass" };
         static public string[] sizeVerieties = { "big", "medium", "small" };
+        static public string[] chairMaterialTypes = { "wood", "plastic" };
 
         public static List<IFurniture> ReadFurnitureFromFileIntoList(string path)
         {
@@ -124,40 +125,15 @@ namespace Final_Project.Helpers
                     }
                     else
                     {
-                        Console.WriteLine("Wrong material. Possible materials: wood, plastic, or glass.");
+                        Console.WriteLine("Wrong material. Possible materials: wood and plastic. " +
+                            "Only in case of table it can be glass.");
                     }
                 }
             }
             return sizeOrMaterial;
         }
 
-        public static float GetDistribution()
-        {
-            int counter = 0;
-            float distribution = 0;
-            while (counter == 0)
-            {
-                try
-                {
-                    counter++;
-                    distribution = float.Parse(Console.ReadLine());
-                    if (distribution > 100 || distribution < 0)
-                    {
-                        throw new IndexOutOfRangeException("Value of distribution should be withing 0 to 100 range.");
-                    }
-                }
-                catch (IndexOutOfRangeException ex)
-                {
-                    counter--;
-                    Console.WriteLine(ex.Message);
-                }
-                catch (FormatException ex)
-                {
-                    counter--;
-                    Console.WriteLine(ex.Message);
-                }
-            }
-            return distribution;
-        }
+
+
     }
 }
