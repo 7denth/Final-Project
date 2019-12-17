@@ -75,7 +75,7 @@ namespace Final_Project
             }
         }
 
-        public void CreateNewKit(Kit setOfFurniture, List<Table> tables, List<Chair> chairs)
+        public void FillInKit(Kit setOfFurniture, List<Table> tables, List<Chair> chairs)
         {
             TableServices tableServices = new TableServices();
             ChairServices chairServices = new ChairServices();
@@ -146,7 +146,7 @@ namespace Final_Project
         public static string GetNameOfSet()
         {
             int counter = 0;
-            Console.WriteLine("Please enter a name for futere set.");
+            Console.WriteLine("Please enter a name for furniture kit.");
             string nameOfSet = "";
             while (counter == 0)
             {
@@ -206,12 +206,46 @@ namespace Final_Project
         string ShowResult(Kit setOfFurniture)
         {
             ChairServices chairServices = new ChairServices();
-            return $"{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
+            return $"\n{setOfFurniture.Name} Kit includes:\n{setOfFurniture.Table.Size} {setOfFurniture.Table.Material} " +
                 $"{setOfFurniture.Table.GetType().Name.ToString()} at price of USD {setOfFurniture.Table.Price}\n" +
                 $"and {setOfChairs} chairs at USD {chairServices.GetPriceOfChairsInSet(setOfFurniture) / setOfChairs} each.\n" +
                 $"Total price for {setOfFurniture.Name} Kit is USD " +
                 $"{setOfFurniture.Table.Price + chairServices.GetPriceOfChairsInSet(setOfFurniture)}.\n";
         }
 
+        public string CreateAFileToWriteKitInto()
+        {
+            Console.WriteLine("Lets save this Kit into File. Please give a name to this file.");
+            string pathToWriteTo = @"";
+            while (pathToWriteTo.Equals(""))
+            {
+                pathToWriteTo = Console.ReadLine();
+                if (!File.Exists(@"F:\\test\Final Project\" + pathToWriteTo + ".txt"))
+                {
+                    FileStream kitFile = File.Create(@"F:\\test\Final Project\" + pathToWriteTo + ".txt");
+                    pathToWriteTo = @"F:\\test\Final Project\" + pathToWriteTo + ".txt";
+                    kitFile.Close();
+                }
+                else
+                {
+                    Console.WriteLine("This name already exists, please choose another name.");
+                }
+            }
+            return pathToWriteTo;
+        }
+
+        public void WriteKitIntoFile(Kit kitToSave, string path)
+        {
+            using (StreamWriter writer = new StreamWriter(path, true, System.Text.Encoding.Default))
+            {
+                int numberOfChairsInKit = ChairServices.CountChairsInKit(kitToSave);
+                double totalCost = kitToSave.Table.Price + numberOfChairsInKit * kitToSave.sampleChairOutOfList().Price;
+                writer.WriteLine($"Kit of furniture {kitToSave.Name} which includes: " +
+                    $"{kitToSave.Table.Size} {kitToSave.Table.GetType().Name.ToString()} made out of {kitToSave.Table.Material}" +
+                    $" and {numberOfChairsInKit} {kitToSave.sampleChairOutOfList().Material} " +
+                    $"chairs is ready." +
+                    $"\nTotal cost for the kit is USD {totalCost}\n");
+            }
+        }
     }
 }

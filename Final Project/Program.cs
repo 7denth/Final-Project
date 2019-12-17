@@ -12,9 +12,9 @@ namespace Final_Project
     {
         static void Main(string[] args)
         {
-            string path = @"F:\\test\Final Project\Furniture.txt";
-            List<IFurniture> furniture = FurnitureServices.ReadFurnitureFromFileIntoList(path);
-            //List<Kit> setsOfFurniture = new List<Kit>();
+            string pathToReadFrom = @"F:\\test\Final Project\Furniture.txt";
+            List<IFurniture> furniture = FurnitureServices.ReadFurnitureFromFileIntoList(pathToReadFrom);
+            List<Kit> kitsOfFurniture = new List<Kit>();
             var tables = furniture.Where(item => item is Table)
                 .Select(item => (Table)item)
                 .ToList();
@@ -22,12 +22,16 @@ namespace Final_Project
                 .Select(item => (Chair)item)
                 .ToList();
 
-            Kit firstSetOfFurniture = new Kit();
-            Kit secondSetOfFurniture2 = new Kit();
+            Kit firstKitOfFurniture = new Kit();
             FurnitureServices furnitureService1 = new FurnitureServices();
+            furnitureService1.FillInKit(firstKitOfFurniture, tables, chairs);
+            furnitureService1.WriteKitIntoFile(firstKitOfFurniture, furnitureService1.CreateAFileToWriteKitInto());
+            Kit secondKitOfFurniture = new Kit();
             FurnitureServices furnitureService2 = new FurnitureServices();
-            furnitureService1.CreateNewKit(firstSetOfFurniture, tables, chairs);
-            furnitureService2.CreateNewKit(secondSetOfFurniture2, tables, chairs);
+            furnitureService2.FillInKit(secondKitOfFurniture, tables, chairs);                   
+            furnitureService1.WriteKitIntoFile(secondKitOfFurniture, furnitureService2.CreateAFileToWriteKitInto());
+            kitsOfFurniture.Add(firstKitOfFurniture);
+            kitsOfFurniture.Add(secondKitOfFurniture);
 
             Console.ReadKey();
         }

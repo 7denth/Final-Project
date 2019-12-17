@@ -57,8 +57,5 @@ namespace Final_Project
             }
             return counterForTables;
         }
-
-
-
     }
 }

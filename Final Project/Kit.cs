@@ -34,5 +34,11 @@ namespace Final_Project
         {
             return chairsInTheKit;
         }
+
+        public Chair sampleChairOutOfList()
+        {
+            Chair chair = chairsInTheKit.FirstOrDefault();
+            return chair;
+        }
     }
 }

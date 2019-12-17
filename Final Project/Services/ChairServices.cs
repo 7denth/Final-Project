@@ -93,5 +93,15 @@ namespace Final_Project
             }
             return cost;
         }
+
+        public static int CountChairsInKit(Kit setOfFurniture)
+        {
+            int numberOfChairs = 0;
+            foreach (Chair x in setOfFurniture.GetList())
+            {
+                numberOfChairs += 1;
+            }
+            return numberOfChairs;
+        }
     }
 }
