@@ -118,6 +118,7 @@ namespace Final_Project
                                 {
                                     newCounter++;
                                 }
+                                tables.Remove(setOfFurniture.Table);
                                 break;
                             }
                         }
@@ -244,7 +245,7 @@ namespace Final_Project
                     $"{kitToSave.Table.Size} {kitToSave.Table.GetType().Name.ToString()} made out of {kitToSave.Table.Material}" +
                     $" and {numberOfChairsInKit} {kitToSave.sampleChairOutOfList().Material} " +
                     $"chairs is ready." +
-                    $"\nTotal cost for the kit is USD {totalCost}\n");
+                    $"\nTotal cost for the kit is USD {totalCost}.\n");
             }
         }
     }

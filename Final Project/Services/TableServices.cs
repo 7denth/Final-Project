@@ -27,7 +27,6 @@ namespace Final_Project
                 {
                     tableCounter++;
                     setOfFurniture.Table = expensiveTable;
-                    tables.Remove(expensiveTable);
                 }
                 else if (expensiveTable == null)
                 {
